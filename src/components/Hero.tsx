@@ -15,7 +15,7 @@ const Hero: FC = () => {
         </h1>
         
         <p className="mt-6 text-xl text-gray-300 max-w-3xl mx-auto">
-          Learn about Bitcoin UTXOs and the concept of &quot;burning&quot; Bitcoin through our interactive educational demo. Explore why Bitcoin&apos;s true power lies with individuals, not centralized authorities.
+          Learn about Bitcoin UTXOs, the concept of &quot;burning&quot; Bitcoin, and why government-controlled Bitcoin reserves present significant risks to Bitcoin&apos;s core principles of decentralization and financial sovereignty.
         </p>
         
         <div className="mt-10 flex justify-center gap-x-6">
@@ -26,10 +26,10 @@ const Hero: FC = () => {
             Try the Demo
           </Link>
           <Link
-            href="#learn"
+            href="/research"
             className="rounded-md border border-white/20 bg-black/20 backdrop-blur-sm px-5 py-3 text-base font-semibold text-white shadow-sm hover:bg-black/30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
           >
-            Learn More
+            Read Research Paper
           </Link>
         </div>
       </div>
