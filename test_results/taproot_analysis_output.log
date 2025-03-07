@@ -1,0 +1,78 @@
+warning: unused import: `bitcoin::Network`
+ --> src/taproot_analysis.rs:2:5
+  |
+2 | use bitcoin::Network;
+  |     ^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+warning: `sbr-lockup-demo` (bin "taproot_analysis") generated 1 warning (run `cargo fix --bin "taproot_analysis"` to apply 1 suggestion)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.01s
+     Running `target/debug/taproot_analysis`
+Taproot for Strategic Bitcoin Reserve - Security Analysis
+=====================================================
+
+Taproot Descriptor Variations for SBR
+------------------------------------
+
+1. Basic Taproot (Key-only, no script path):
+   tr(xpub661MyMwAqRbcFtXgS5sYJABqqG9YLmC4Q1Rdap9gSE8NqtwybGhePY2gZ29ESFjqJoCu1Rupje8YtGqsefD265TMg7usUDFdp6W1EGMcet8/0/*)#svstklww
+   Sample Address: bc1p0xlxvlhemja6c4dqv22uapctqupfhlxm9h8z3k2e72q4k9hcz7vqzk5jj0
+   Benefit: Maximum privacy, appears as single signature spend
+   Drawback: No complex policy/backup spending path
+
+2. Taproot with Internal Key (Conceptual Multi-signature):
+   In a real implementation, this would use MuSig2 aggregation for multiple signers
+   Sample Address: bc1pexdkmmvxj0qhzwljz9u7pz0mpf9vdl8czs5a9fk52fmj6k86zvmsws9stc
+   Benefit: Privacy (appears as single key) with multi-sig requirement
+   Drawback: No fallback/timelock paths
+
+3. Taproot with Internal Key and Complex Script Paths (conceptual):
+   In a real implementation, this would be a Taproot output with:
+   - Internal key: xpub661MyMwAqRbcFtXgS5sYJABqqG9YLmC4Q1Rdap9gSE8NqtwybGhePY2gZ29ESFjqJoCu1Rupje8YtGqsefD265TMg7usUDFdp6W1EGMcet8/0/*
+   - Script path: or(thresh(3,pk(xpub661MyMwAqRbcFtXgS5sYJABqqG9YLmC4Q1Rdap9gSE8NqtwybGhePY2gZ29ESFjqJoCu1Rupje8YtGqsefD265TMg7usUDFdp6W1EGMcet8/0/*),pk(xpub661MyMwAqRbcFtXgS5sYJABqqG9YLmC4Q1Rdap9gSE8NqtwybGhePY2gZ29ESFjqJoCu1Rupje8YtGqsefD265TMg7usUDFdp6W1EGMcet8/1/*),pk(xpub661MyMwAqRbcFtXgS5sYJABqqG9YLmC4Q1Rdap9gSE8NqtwybGhePY2gZ29ESFjqJoCu1Rupje8YtGqsefD265TMg7usUDFdp6W1EGMcet8/2/*),pk(xpub661MyMwAqRbcFtXgS5sYJABqqG9YLmC4Q1Rdap9gSE8NqtwybGhePY2gZ29ESFjqJoCu1Rupje8YtGqsefD265TMg7usUDFdp6W1EGMcet8/3/*),pk(xpub661MyMwAqRbcFtXgS5sYJABqqG9YLmC4Q1Rdap9gSE8NqtwybGhePY2gZ29ESFjqJoCu1Rupje8YtGqsefD265TMg7usUDFdp6W1EGMcet8/4/*)),or(and(thresh(2,pk(xpub661MyMwAqRbcFtXgS5sYJABqqG9YLmC4Q1Rdap9gSE8NqtwybGhePY2gZ29ESFjqJoCu1Rupje8YtGqsefD265TMg7usUDFdp6W1EGMcet8/0/*),pk(xpub661MyMwAqRbcFtXgS5sYJABqqG9YLmC4Q1Rdap9gSE8NqtwybGhePY2gZ29ESFjqJoCu1Rupje8YtGqsefD265TMg7usUDFdp6W1EGMcet8/1/*),pk(xpub661MyMwAqRbcFtXgS5sYJABqqG9YLmC4Q1Rdap9gSE8NqtwybGhePY2gZ29ESFjqJoCu1Rupje8YtGqsefD265TMg7usUDFdp6W1EGMcet8/2/*),pk(xpub661MyMwAqRbcFtXgS5sYJABqqG9YLmC4Q1Rdap9gSE8NqtwybGhePY2gZ29ESFjqJoCu1Rupje8YtGqsefD265TMg7usUDFdp6W1EGMcet8/3/*),pk(xpub661MyMwAqRbcFtXgS5sYJABqqG9YLmC4Q1Rdap9gSE8NqtwybGhePY2gZ29ESFjqJoCu1Rupje8YtGqsefD265TMg7usUDFdp6W1EGMcet8/4/*)),after(26280)),after(105120)))
+   Sample Address: bc1pgqfyzkh9xrnjqz99zq5fw5k4qe9anzqldn3ccylxu67rgkxr47xqewcq8a
+   Benefit: Key path for efficiency, script path for complex fallback
+   Ideal for SBR: Combines simplicity, privacy, and complex backup policy
+
+4. Taproot with Multiple Explicit Script Paths (conceptual):
+   In a real implementation, this would be a Taproot output with several script paths:
+   - Script path 1: thresh(3,...) - 3-of-5 multisig
+   - Script path 2: thresh(2,...) with 6-month timelock
+   - Script path 3: 2-year timelock for emergency access
+   Sample Address: bc1pqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqsytek6e
+   Benefit: Clear separation of different spending paths
+   Suitable for formal governance structures with well-defined protocols
+
+Security Benefits of Taproot for Strategic Bitcoin Reserve
+------------------------------------------------------
+
+1. Privacy Enhancement
+   - Complex spending conditions are hidden on-chain
+   - Reserve appears as a single public key output
+   - External observers cannot determine the access structure
+   - Reduces potential for targeted attacks on key holders
+
+2. Cost Efficiency
+   - Key path spending is cheaper than script path
+   - Normal committee operations use the efficient key path
+   - Only emergency scenarios reveal and execute the script path
+   - Saves on transaction fees during normal operation
+
+3. Flexibility with Security
+   - Allows multiple backup spending paths without revealing them
+   - Can encode complex governance rules in the script path
+   - Support for both threshold signatures and timelocks
+   - Emergency access doesn't compromise normal security
+
+4. Merkelized Script Trees
+   - Only the specific script path used is revealed when spent
+   - Other alternative paths remain private
+   - Scales well with additional governance requirements
+   - Allows future script paths to be added via cooperative close
+
+5. Protection Against Political Risks
+   - Multi-party control prevents unilateral access
+   - Timelock conditions prevent hasty liquidation
+   - Cannot be easily seized through legal means alone
+   - Script paths can enforce specific spending circumstances

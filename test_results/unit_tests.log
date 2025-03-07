@@ -1,0 +1,22 @@
+   Compiling sbr-lockup-demo v0.1.0 (/Users/josh/github/govsbr)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.48s
+     Running unittests src/tests.rs (target/debug/deps/tests-1da56c900cc57098)
+
+running 5 tests
+test tests::test_taproot_descriptors ... ok
+test tests::test_create_basic_multisig ... ok
+test tests::test_timelock_multisig ... ok
+test tests::test_policy_analysis ... ok
+test tests::test_create_complex_policy ... ok
+
+successes:
+
+successes:
+    tests::test_create_basic_multisig
+    tests::test_create_complex_policy
+    tests::test_policy_analysis
+    tests::test_taproot_descriptors
+    tests::test_timelock_multisig
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

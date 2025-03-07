@@ -1,0 +1,6 @@
+Policy Analysis
+Total keys referenced
+Policy contains timelocks
+Policy contains threshold
+Descriptor Validation
+Valid Bitcoin address

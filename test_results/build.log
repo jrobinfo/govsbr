@@ -1,0 +1,35 @@
+warning: unused import: `bitcoin::Network`
+ --> src/taproot_analysis.rs:2:5
+  |
+2 | use bitcoin::Network;
+  |     ^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+warning: unused import: `bitcoin::Network`
+ --> src/policy_analyzer.rs:2:5
+  |
+2 | use bitcoin::Network;
+  |     ^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+warning: unused imports: `Miniscript`, `Tap`, and `TranslatePk`
+ --> src/policy_analyzer.rs:3:51
+  |
+3 | use miniscript::{Descriptor, DescriptorPublicKey, Miniscript, Tap, policy::Concrete, TranslatePk};
+  |                                                   ^^^^^^^^^^  ^^^                    ^^^^^^^^^^^
+
+warning: unused import: `Network`
+ --> src/sbr_lockup.rs:2:15
+  |
+2 | use bitcoin::{Network};
+  |               ^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+   Compiling sbr-lockup-demo v0.1.0 (/Users/josh/github/govsbr)
+warning: `sbr-lockup-demo` (bin "taproot_analysis") generated 1 warning (run `cargo fix --bin "taproot_analysis"` to apply 1 suggestion)
+warning: `sbr-lockup-demo` (bin "policy_analyzer") generated 2 warnings (run `cargo fix --bin "policy_analyzer"` to apply 2 suggestions)
+warning: `sbr-lockup-demo` (bin "sbr_lockup") generated 1 warning (run `cargo fix --bin "sbr_lockup"` to apply 1 suggestion)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.18s

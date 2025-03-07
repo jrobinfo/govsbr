@@ -1,0 +1,6 @@
+Taproot for Strategic Bitcoin Reserve
+Taproot Descriptor Variations
+Basic Taproot
+Script Paths
+Security Benefits
+Privacy Enhancement

@@ -1,0 +1,29 @@
+[package]
+name = "sbr-lockup-demo"
+version = "0.1.0"
+edition = "2021"
+description = "Demo for Strategic Bitcoin Reserve lockup mechanisms using Taproot and Miniscript"
+authors = ["SBR Demo Team"]
+
+[dependencies]
+bitcoin = "0.32.0"
+miniscript = "12.3.0"
+
+[[bin]]
+name = "sbr_lockup"
+path = "src/sbr_lockup.rs"
+
+[[bin]]
+name = "policy_analyzer"
+path = "src/policy_analyzer.rs"
+
+[[bin]]
+name = "taproot_analysis"
+path = "src/taproot_analysis.rs"
+
+[[bin]]
+name = "tests"
+path = "src/tests.rs"
+
+[dev-dependencies]
+pretty_assertions = "1.4.0" 

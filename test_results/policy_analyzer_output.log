@@ -1,0 +1,45 @@
+warning: unused import: `bitcoin::Network`
+ --> src/policy_analyzer.rs:2:5
+  |
+2 | use bitcoin::Network;
+  |     ^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+warning: unused imports: `Miniscript`, `Tap`, and `TranslatePk`
+ --> src/policy_analyzer.rs:3:51
+  |
+3 | use miniscript::{Descriptor, DescriptorPublicKey, Miniscript, Tap, policy::Concrete, TranslatePk};
+  |                                                   ^^^^^^^^^^  ^^^                    ^^^^^^^^^^^
+
+warning: `sbr-lockup-demo` (bin "policy_analyzer") generated 2 warnings (run `cargo fix --bin "policy_analyzer"` to apply 2 suggestions)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.01s
+     Running `target/debug/policy_analyzer`
+Strategic Bitcoin Reserve Policy Analyzer
+========================================
+
+Analyzing complex policy: or(thresh(3,pk(xpub661MyMwAqRbcFtXgS5sYJABqqG9YLmC4Q1Rdap9gSE8NqtwybGhePY2gZ29ESFjqJoCu1Rupje8YtGqsefD265TMg7usUDFdp6W1EGMcet8/0/*),pk(xpub661MyMwAqRbcFtXgS5sYJABqqG9YLmC4Q1Rdap9gSE8NqtwybGhePY2gZ29ESFjqJoCu1Rupje8YtGqsefD265TMg7usUDFdp6W1EGMcet8/1/*),pk(xpub661MyMwAqRbcFtXgS5sYJABqqG9YLmC4Q1Rdap9gSE8NqtwybGhePY2gZ29ESFjqJoCu1Rupje8YtGqsefD265TMg7usUDFdp6W1EGMcet8/2/*),pk(xpub661MyMwAqRbcFtXgS5sYJABqqG9YLmC4Q1Rdap9gSE8NqtwybGhePY2gZ29ESFjqJoCu1Rupje8YtGqsefD265TMg7usUDFdp6W1EGMcet8/3/*),pk(xpub661MyMwAqRbcFtXgS5sYJABqqG9YLmC4Q1Rdap9gSE8NqtwybGhePY2gZ29ESFjqJoCu1Rupje8YtGqsefD265TMg7usUDFdp6W1EGMcet8/4/*)),or(and(thresh(2,pk(xpub661MyMwAqRbcFtXgS5sYJABqqG9YLmC4Q1Rdap9gSE8NqtwybGhePY2gZ29ESFjqJoCu1Rupje8YtGqsefD265TMg7usUDFdp6W1EGMcet8/0/*),pk(xpub661MyMwAqRbcFtXgS5sYJABqqG9YLmC4Q1Rdap9gSE8NqtwybGhePY2gZ29ESFjqJoCu1Rupje8YtGqsefD265TMg7usUDFdp6W1EGMcet8/1/*),pk(xpub661MyMwAqRbcFtXgS5sYJABqqG9YLmC4Q1Rdap9gSE8NqtwybGhePY2gZ29ESFjqJoCu1Rupje8YtGqsefD265TMg7usUDFdp6W1EGMcet8/2/*),pk(xpub661MyMwAqRbcFtXgS5sYJABqqG9YLmC4Q1Rdap9gSE8NqtwybGhePY2gZ29ESFjqJoCu1Rupje8YtGqsefD265TMg7usUDFdp6W1EGMcet8/3/*),pk(xpub661MyMwAqRbcFtXgS5sYJABqqG9YLmC4Q1Rdap9gSE8NqtwybGhePY2gZ29ESFjqJoCu1Rupje8YtGqsefD265TMg7usUDFdp6W1EGMcet8/4/*)),after(26280)),after(105120)))
+
+Policy Analysis:
+----------------
+  Total keys referenced: 10
+  Policy contains timelocks
+    - 6-month timelock (~26,280 blocks)
+    - 2-year timelock (~105,120 blocks)
+  Policy contains threshold (multi-signature) conditions
+    - 3-of-5 threshold condition
+    - 2-of-5 threshold condition
+  Number of distinct spending paths: 3
+
+Descriptor Validation:
+---------------------
+  ✅ Descriptor passed sanity check
+  ✅ Descriptor can be satisfied
+  Estimated max satisfaction weight: 66 WU
+  Estimated max transaction size: ~16 bytes
+  ✅ Valid Bitcoin address could be derived (with proper key derivation)
+
+Note on Taproot with Complex Scripts:
+  In a real implementation, the complex policy would be incorporated
+  as a script path in the Taproot descriptor. This example uses a
+  simplified approach with only an internal key for demonstration purposes.

@@ -1,0 +1,43 @@
+SBR Lockup Demo Test Suite Log - Fri Mar  7 16:36:34 EST 2025
+====================================================
+
+Stage 1: Environment Check
+------------------------------------------------------------
+Checking for Rust and Cargo...
+✅ Cargo is installed
+Rust Version: rustc 1.85.0 (4d91de4e4 2025-02-17) (Homebrew)
+Cargo Version: cargo 1.85.0
+Checking dependencies...
+✅ Dependencies OK
+\nStage 2: Building the Project
+------------------------------------------------------------
+Building debug binaries...
+✅ Debug build successful
+Building release binaries...
+✅ Release build successful
+\nStage 3: Running Unit Tests
+------------------------------------------------------------
+Running unit tests...
+✅ All unit tests passed: 5 tests
+\nStage 4: Running Binaries and Verifying Output
+------------------------------------------------------------
+Running sbr_lockup...
+✅ sbr_lockup ran successfully with all expected output
+Running policy_analyzer...
+✅ policy_analyzer ran successfully with all expected output
+Running taproot_analysis...
+✅ taproot_analysis ran successfully with all expected output
+\nStage 5: Performance Tests
+------------------------------------------------------------
+Running performance tests (simple timing)...
+Timing sbr_lockup for 3 runs...
+Average execution time: .333 seconds
+Timing policy_analyzer for 3 runs...
+Average execution time: 0 seconds
+Timing taproot_analysis for 3 runs...
+Average execution time: 0 seconds
+\nStage 6: Test Summary
+------------------------------------------------------------
+\nTest Suite Completed!
+Summary Report: test_results/test_report.md
+✅ All tests passed! The SBR Lockup Demo is working correctly.

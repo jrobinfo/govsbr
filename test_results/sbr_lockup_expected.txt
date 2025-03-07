@@ -1,0 +1,6 @@
+Strategic Bitcoin Reserve
+Committee Members: 5 members
+3-of-5 signatures
+Taproot Descriptor
+Deposit Address
+Multi-signature protection
