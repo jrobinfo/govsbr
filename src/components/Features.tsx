@@ -1,0 +1,69 @@
+import { FC } from 'react'
+import { ArrowDown, Lock, UserRound, GlobeLock, AlertTriangle } from 'lucide-react'
+
+const Features: FC = () => {
+  return (
+    <section id="learn" className="py-24 px-6 md:px-12 lg:px-16 xl:px-24 bg-black/80">
+      <div className="max-w-7xl mx-auto">
+        <div className="text-center mb-16">
+          <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+            Why Bitcoin Belongs to Individuals
+          </h2>
+          <p className="mt-4 text-xl text-gray-300">
+            Understanding the fundamental principles of Bitcoin and why government ownership contradicts its core values.
+          </p>
+        </div>
+        
+        <div className="grid grid-cols-1 gap-y-12 gap-x-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="relative p-6 bg-gray-800/50 rounded-xl">
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-orange-500 rounded-full p-3">
+              <UserRound className="h-6 w-6 text-white" />
+            </div>
+            <h3 className="mt-4 text-xl font-semibold text-white pt-2">Decentralization</h3>
+            <p className="mt-3 text-gray-300">
+              Bitcoin was designed to operate without central authorities. Government ownership of large Bitcoin reserves contradicts this fundamental principle.
+            </p>
+          </div>
+          
+          <div className="relative p-6 bg-gray-800/50 rounded-xl">
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-orange-500 rounded-full p-3">
+              <Lock className="h-6 w-6 text-white" />
+            </div>
+            <h3 className="mt-4 text-xl font-semibold text-white pt-2">Self-Sovereignty</h3>
+            <p className="mt-3 text-gray-300">
+              Bitcoin enables individuals to take full control of their wealth without intermediaries. Government reserves undermine this sovereignty.
+            </p>
+          </div>
+          
+          <div className="relative p-6 bg-gray-800/50 rounded-xl">
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-orange-500 rounded-full p-3">
+              <GlobeLock className="h-6 w-6 text-white" />
+            </div>
+            <h3 className="mt-4 text-xl font-semibold text-white pt-2">Monetary Freedom</h3>
+            <p className="mt-3 text-gray-300">
+              Bitcoin provides freedom from government monetary policies. Government Bitcoin reserves could enable market manipulation.
+            </p>
+          </div>
+          
+          <div className="relative p-6 bg-gray-800/50 rounded-xl lg:col-span-3">
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-red-500 rounded-full p-3">
+              <AlertTriangle className="h-6 w-6 text-white" />
+            </div>
+            <h3 className="mt-4 text-xl font-semibold text-white pt-2">The Strategic Bitcoin Reserve Problem</h3>
+            <p className="mt-3 text-gray-300">
+              The United States has announced plans to create a Strategic Bitcoin Reserve, claiming they&apos;ll never sell the Bitcoin. However, history shows that politicians cannot be trusted with such promises. As Luke Dashjr stated: &quot;Government is funded by taxpayers. It has no business having &apos;reserves&apos;, whether it be dollars or bitcoins. Any excess should be refunded to the taxpayers, or used to reduce taxes the next year.&quot;
+            </p>
+            <p className="mt-3 text-gray-300">
+              Government Bitcoin holdings create centralization risks, potential market manipulation, and conflict with Bitcoin&apos;s core principles.
+            </p>
+            <div className="mt-5 flex justify-center">
+              <ArrowDown className="h-8 w-8 text-orange-500 animate-bounce" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+export default Features 
