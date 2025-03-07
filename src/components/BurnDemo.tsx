@@ -71,9 +71,16 @@ const BurnDemo: FC = () => {
         setCurrentStep(1)
       } else {
         console.error('Failed to initialize wallet:', data.error)
+        if (data.details) {
+          console.error('Error details:', data.details)
+          alert(`Failed to initialize wallet: ${data.details}`)
+        } else {
+          alert(`Failed to initialize wallet: ${data.error || 'Unknown error'}`)
+        }
       }
     } catch (error) {
       console.error('Failed to initialize demo:', error)
+      alert(`Failed to initialize demo: ${error instanceof Error ? error.message : String(error)}`)
     } finally {
       setIsLoading(false)
     }
