@@ -1,7 +1,7 @@
 'use client'
 
 import { FC, useState, useEffect } from 'react'
-import { Flame, Copy, Check, Eye, EyeOff, RefreshCw } from 'lucide-react'
+import { Flame, Copy, Check, Eye, EyeOff, RefreshCw, ArrowDown, Code, Info } from 'lucide-react'
 import Step from '@/components/Step'
 
 // Define types for our demo
@@ -25,6 +25,133 @@ type Transaction = {
   burnMessage?: string
   timestamp?: number
 }
+
+// Transaction Details Component
+const TransactionDetails: FC<{
+  utxo?: UTXO;
+  burnMessage?: string;
+  txid?: string;
+  isConfirmed?: boolean;
+}> = ({ utxo, burnMessage, txid, isConfirmed = false }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  
+  if (!utxo && !txid) return null;
+  
+  // Calculate network fee (simulated)
+  const networkFee = utxo ? (utxo.value * 0.0001) : 10000; // 0.01% or 10000 sats
+  
+  // Format satoshis to BTC
+  const formatBTC = (sats: number) => (sats / 100000000).toFixed(8);
+  
+  return (
+    <div className="bg-gray-800/50 rounded-lg p-4 mt-4">
+      <button 
+        onClick={() => setIsExpanded(!isExpanded)}
+        className="flex items-center justify-between w-full text-left"
+      >
+        <span className="text-white font-medium flex items-center">
+          <Code className="h-4 w-4 mr-2" />
+          Technical Transaction Details
+        </span>
+        <span className={`transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}>
+          <ArrowDown className="h-4 w-4 text-gray-400" />
+        </span>
+      </button>
+      
+      {isExpanded && (
+        <div className="mt-4 space-y-4">
+          <div>
+            <h4 className="text-sm font-medium text-white mb-2">Transaction Overview</h4>
+            <div className="bg-black/30 rounded p-3 font-mono text-xs">
+              <p className="text-gray-300 mb-1">
+                <span className="text-gray-500">txid:</span> {txid || `burn_tx_${Math.random().toString(16).slice(2, 10)}`}
+              </p>
+              <p className="text-gray-300 mb-1">
+                <span className="text-gray-500">version:</span> 2
+              </p>
+              <p className="text-gray-300 mb-1">
+                <span className="text-gray-500">size:</span> 224 bytes
+              </p>
+              <p className="text-gray-300 mb-1">
+                <span className="text-gray-500">locktime:</span> 0
+              </p>
+              <p className="text-gray-300">
+                <span className="text-gray-500">status:</span> {isConfirmed ? 'confirmed' : 'unconfirmed'}
+              </p>
+            </div>
+          </div>
+          
+          <div>
+            <h4 className="text-sm font-medium text-white mb-2">Input (1)</h4>
+            <div className="bg-black/30 rounded p-3 font-mono text-xs">
+              <p className="text-gray-300 mb-1">
+                <span className="text-gray-500">txid:</span> {utxo?.txid || 'previous_tx_id'}
+              </p>
+              <p className="text-gray-300 mb-1">
+                <span className="text-gray-500">vout:</span> {utxo?.vout || 0}
+              </p>
+              <p className="text-gray-300 mb-1">
+                <span className="text-gray-500">scriptsig:</span> {'<signature> <pubkey>'}
+              </p>
+              <p className="text-gray-300 mb-1">
+                <span className="text-gray-500">sequence:</span> 0xffffffff
+              </p>
+              <p className="text-gray-300">
+                <span className="text-gray-500">witness:</span> []
+              </p>
+            </div>
+          </div>
+          
+          <div>
+            <h4 className="text-sm font-medium text-white mb-2">Outputs (2)</h4>
+            <div className="space-y-3">
+              {/* Change output */}
+              <div className="bg-black/30 rounded p-3 font-mono text-xs">
+                <p className="text-gray-300 mb-1">
+                  <span className="text-gray-500">value:</span> {utxo ? formatBTC(utxo.value - networkFee) : '0.00000000'} BTC
+                </p>
+                <p className="text-gray-300 mb-1">
+                  <span className="text-gray-500">scriptpubkey:</span> {'OP_DUP OP_HASH160 <hash> OP_EQUALVERIFY OP_CHECKSIG'}
+                </p>
+                <p className="text-gray-300">
+                  <span className="text-gray-500">type:</span> p2pkh (change address)
+                </p>
+              </div>
+              
+              {/* OP_RETURN output */}
+              <div className="bg-red-900/20 border-l-4 border-red-500 rounded p-3 font-mono text-xs">
+                <p className="text-gray-300 mb-1">
+                  <span className="text-gray-500">value:</span> 0.00000000 BTC <span className="text-red-400 font-normal">(BURNED)</span>
+                </p>
+                <p className="text-gray-300 mb-1">
+                  <span className="text-gray-500">scriptpubkey:</span> {'OP_RETURN'} {burnMessage ? `<&quot;${burnMessage}&quot;>` : '<data>'}
+                </p>
+                <p className="text-gray-300">
+                  <span className="text-gray-500">type:</span> null-data (provably unspendable)
+                </p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-gray-700/30 rounded p-3 mt-4">
+            <h4 className="text-sm font-medium text-white flex items-center mb-2">
+              <Info className="h-4 w-4 mr-1 text-blue-400" />
+              How OP_RETURN Works
+            </h4>
+            <ul className="text-gray-300 text-xs space-y-2">
+              <li>• <strong>OP_RETURN</strong> is a Bitcoin script opcode that marks a transaction output as invalid.</li>
+              <li>• Coins sent to an OP_RETURN output are provably unspendable and permanently removed from circulation.</li>
+              <li>• It allows embedding up to 80 bytes of arbitrary data into the blockchain.</li>
+              <li>• This data (like &quot;{burnMessage || 'message'}&quot;) becomes a permanent part of the Bitcoin blockchain.</li>
+              <li>• The consensus rules of Bitcoin prevent these outputs from being spent, ensuring they are burned forever.</li>
+              <li>• Miners still include these transactions because they collect the transaction fees.</li>
+            </ul>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
 
 const BurnDemo: FC = () => {
   // Demo state
@@ -478,7 +605,13 @@ const BurnDemo: FC = () => {
                 <p className="font-mono text-xs text-gray-300">Amount: {(selectedUtxo.value / 100000000).toFixed(8)} BTC</p>
               </div>
               
-              <div className="flex space-x-4">
+              {/* Add transaction details component */}
+              <TransactionDetails 
+                utxo={selectedUtxo}
+                burnMessage={burnMessage}
+              />
+              
+              <div className="flex space-x-4 mt-6">
                 <button
                   onClick={() => {
                     setSelectedUtxo(null)
@@ -522,6 +655,11 @@ const BurnDemo: FC = () => {
                           {tx.type === 'funding' ? (
                             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-200 text-green-800">
                               Funding
+                            </span>
+                          ) : tx.confirmations > 0 ? (
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-200 text-purple-800">
+                              <Flame className="h-3 w-3 mr-1" />
+                              Burned
                             </span>
                           ) : (
                             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-200 text-red-800">
@@ -571,13 +709,6 @@ const BurnDemo: FC = () => {
                     >
                       {isLoading ? 'Mining...' : 'Mine Block to Confirm'}
                     </button>
-                    <button
-                      onClick={() => mineBlocks(6)}
-                      disabled={isLoading}
-                      className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-md text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      {isLoading ? 'Mining...' : 'Mine 6 Blocks (Fully Confirm)'}
-                    </button>
                   </div>
                 </div>
               )}
@@ -593,7 +724,7 @@ const BurnDemo: FC = () => {
                     The transaction has been confirmed and the Bitcoin is permanently removed from circulation.
                   </p>
                   <div className="bg-black/20 p-4 rounded-lg">
-                    <h5 className="text-sm font-semibold text-white mb-2">Technical Details:</h5>
+                    <h5 className="text-sm font-semibold text-white mb-2">Transaction Summary:</h5>
                     {transactions.filter(tx => tx.type === 'burning' && tx.confirmations > 0).map(burnTx => (
                       <div key={burnTx.txid} className="text-xs font-mono">
                         <p className="text-gray-300 mb-1"><span className="text-gray-400">Transaction ID:</span> {burnTx.txid}</p>
@@ -603,6 +734,25 @@ const BurnDemo: FC = () => {
                       </div>
                     ))}
                   </div>
+                  
+                  {/* Show detailed transaction for the burned transaction */}
+                  {transactions.filter(tx => tx.type === 'burning' && tx.confirmations > 0).map(burnTx => {
+                    const burnUtxo = {
+                      txid: burnTx.txid.replace('burn', 'funding'),
+                      vout: 0,
+                      value: burnTx.amount * 100000000
+                    };
+                    
+                    return (
+                      <TransactionDetails 
+                        key={burnTx.txid}
+                        utxo={burnUtxo}
+                        txid={burnTx.txid}
+                        burnMessage={burnTx.burnMessage}
+                        isConfirmed={true}
+                      />
+                    );
+                  })}
                   
                   <div className="mt-4 bg-gray-800/50 p-4 rounded-lg">
                     <h5 className="text-sm font-semibold text-white mb-2">How to Verify a Burn Transaction:</h5>
@@ -618,6 +768,60 @@ const BurnDemo: FC = () => {
                       In real-world usage, properly verifying burns is a critical step to ensure
                       that the Bitcoin was actually made unspendable and not just sent to another address.
                     </p>
+                  </div>
+                  
+                  <div className="mt-4 bg-gray-700/30 rounded-lg p-4">
+                    <h5 className="text-sm font-semibold text-white mb-2">Technical Burn Verification Guide:</h5>
+                    
+                    <div className="space-y-4 text-xs">
+                      <div>
+                        <h6 className="text-blue-400 font-medium mb-1">Step 1: Decode the Raw Transaction</h6>
+                        <div className="bg-black/30 rounded p-2 font-mono">
+                          <p className="text-gray-300">$ bitcoin-cli -regtest decoderawtransaction [transaction_hex]</p>
+                        </div>
+                        <p className="mt-1 text-gray-400">This command shows the complete structure of the transaction including all inputs and outputs.</p>
+                      </div>
+                      
+                      <div>
+                        <h6 className="text-blue-400 font-medium mb-1">Step 2: Verify OP_RETURN in scriptPubKey</h6>
+                        <div className="bg-black/30 rounded p-2 font-mono">
+                          <p className="text-gray-300">
+                            &quot;scriptPubKey&quot;: {`{`}<br />
+                            &nbsp;&nbsp;&quot;asm&quot;: &quot;OP_RETURN [your_data_hex]&quot;,<br />
+                            &nbsp;&nbsp;&quot;type&quot;: &quot;nulldata&quot;,<br />
+                            &nbsp;&nbsp;...<br />
+                            {`}`}
+                          </p>
+                        </div>
+                        <p className="mt-1 text-gray-400">
+                          The <span className="font-mono text-gray-300">type: &quot;nulldata&quot;</span> and 
+                          <span className="font-mono text-gray-300"> OP_RETURN</span> in the ASM field 
+                          confirm this is a burn output.
+                        </p>
+                      </div>
+                      
+                      <div>
+                        <h6 className="text-blue-400 font-medium mb-1">Step 3: Decode the Message Data</h6>
+                        <div className="bg-black/30 rounded p-2 font-mono">
+                          <p className="text-gray-300">$ echo [hex_data] | xxd -r -p</p>
+                        </div>
+                        <p className="mt-1 text-gray-400">
+                          Convert the hex data following the OP_RETURN to ASCII text to verify the message.
+                          For example, your message &quot;{transactions.find(tx => tx.type === 'burning')?.burnMessage || burnMessage}&quot; 
+                          would appear in the data section after conversion.
+                        </p>
+                      </div>
+                      
+                      <div>
+                        <h6 className="text-blue-400 font-medium mb-1">Step 4: Confirm Provable Unspendability</h6>
+                        <p className="text-gray-400">
+                          Bitcoin&apos;s consensus rules define <span className="font-mono text-gray-300">OP_RETURN</span> as 
+                          immediately terminating script execution and marking the transaction as invalid. This means 
+                          the funds sent to this output can never be spent again, regardless of what data follows the 
+                          <span className="font-mono text-gray-300"> OP_RETURN</span> opcode.
+                        </p>
+                      </div>
+                    </div>
                   </div>
                   
                   <div className="mt-4">
