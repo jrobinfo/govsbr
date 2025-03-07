@@ -1,0 +1,577 @@
+'use client'
+
+import { FC, useState, useEffect } from 'react'
+import { Flame, Copy, Check, Eye, EyeOff, RefreshCw } from 'lucide-react'
+import Step from './Step'
+
+// Define types for our demo
+type Wallet = {
+  address: string
+  privateKeyWIF: string
+  balance: number
+}
+
+type UTXO = {
+  txid: string
+  vout: number
+  value: number
+}
+
+type Transaction = {
+  txid: string
+  confirmations: number
+  type: 'funding' | 'burning'
+  amount: number
+  burnMessage?: string
+}
+
+const BurnDemo: FC = () => {
+  // Demo state
+  const [wallet, setWallet] = useState<Wallet | null>(null)
+  const [utxos, setUtxos] = useState<UTXO[]>([])
+  const [transactions, setTransactions] = useState<Transaction[]>([])
+  const [burnMessage, setBurnMessage] = useState('Bitcoin belongs to individuals, not governments')
+  const [selectedUtxo, setSelectedUtxo] = useState<UTXO | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
+  const [currentStep, setCurrentStep] = useState(1)
+  const [showPrivateKey, setShowPrivateKey] = useState(false)
+  const [copied, setCopied] = useState(false)
+  const [blockHeight, setBlockHeight] = useState(0)
+
+  // Initialize the demo when component mounts
+  useEffect(() => {
+    initializeDemo()
+  }, [])
+
+  // Function to reset and initialize the demo
+  const initializeDemo = async () => {
+    setIsLoading(true)
+    
+    try {
+      // In a real implementation, this would call our backend API
+      // For now, we'll simulate the response
+      
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      
+      // Create a mock wallet
+      const newWallet: Wallet = {
+        address: 'bcrt1qsampleaddress0123456789abcdefgh',
+        privateKeyWIF: 'cSamplePrivateKeyWIFForDemonstrationPurposesOnly',
+        balance: 0
+      }
+      
+      setWallet(newWallet)
+      setUtxos([])
+      setTransactions([])
+      setBlockHeight(0)
+      setCurrentStep(1)
+      
+    } catch (error) {
+      console.error('Failed to initialize demo:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  // Function to fund the wallet with test Bitcoin
+  const fundWallet = async () => {
+    setIsLoading(true)
+    
+    try {
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 1500))
+      
+      const newTxid = `regtest${Math.random().toString(16).slice(2, 10)}`
+      
+      // Create a new funding transaction
+      const fundingTx: Transaction = {
+        txid: newTxid,
+        confirmations: 0,
+        type: 'funding',
+        amount: 1.0
+      }
+      
+      // Add the transaction to our list
+      setTransactions(prev => [...prev, fundingTx])
+      
+      // Create a UTXO
+      const newUtxo: UTXO = {
+        txid: newTxid,
+        vout: 0,
+        value: 100000000 // 1 BTC in satoshis
+      }
+      
+      // Update UTXOs
+      setUtxos(prev => [...prev, newUtxo])
+      
+      // Update wallet balance
+      if (wallet) {
+        setWallet({
+          ...wallet,
+          balance: wallet.balance + 1.0
+        })
+      }
+      
+      // Move to next step
+      setCurrentStep(2)
+      
+    } catch (error) {
+      console.error('Failed to fund wallet:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  // Function to mine blocks to confirm transactions
+  const mineBlocks = async (count: number = 1) => {
+    setIsLoading(true)
+    
+    try {
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      
+      // Update block height
+      setBlockHeight(prev => prev + count)
+      
+      // Update transaction confirmations
+      setTransactions(prev => 
+        prev.map(tx => ({
+          ...tx,
+          confirmations: tx.confirmations + count
+        }))
+      )
+      
+    } catch (error) {
+      console.error('Failed to mine blocks:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  // Function to burn Bitcoin
+  const burnBitcoin = async () => {
+    if (!selectedUtxo || !wallet) return
+    
+    setIsLoading(true)
+    
+    try {
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 2000))
+      
+      const burnTxid = `burn${Math.random().toString(16).slice(2, 10)}`
+      
+      // Create a new burn transaction
+      const burnTx: Transaction = {
+        txid: burnTxid,
+        confirmations: 0,
+        type: 'burning',
+        amount: selectedUtxo.value / 100000000, // Convert satoshis to BTC
+        burnMessage: burnMessage
+      }
+      
+      // Add the transaction to our list
+      setTransactions(prev => [...prev, burnTx])
+      
+      // Remove the burned UTXO
+      setUtxos(prev => prev.filter(utxo => 
+        utxo.txid !== selectedUtxo.txid || utxo.vout !== selectedUtxo.vout
+      ))
+      
+      // Update wallet balance
+      setWallet({
+        ...wallet,
+        balance: wallet.balance - (selectedUtxo.value / 100000000)
+      })
+      
+      // Reset selected UTXO
+      setSelectedUtxo(null)
+      
+      // Move to next step
+      setCurrentStep(4)
+      
+    } catch (error) {
+      console.error('Failed to burn Bitcoin:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  // Function to copy text to clipboard
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text).then(() => {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    })
+  }
+
+  return (
+    <section id="demo" className="py-24 px-6 md:px-12 lg:px-16 xl:px-24 bg-gray-900 border-t border-gray-800">
+      <div className="max-w-7xl mx-auto">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+            Interactive Bitcoin Burning Demo
+          </h2>
+          <p className="mt-4 text-xl text-gray-300">
+            Experience how Bitcoin UTXOs can be permanently removed from circulation through an educational regtest demonstration.
+          </p>
+        </div>
+        
+        {/* Steps navigation */}
+        <div className="flex flex-wrap justify-center gap-2 mb-12">
+          <Step 
+            number={1} 
+            title="Create Wallet" 
+            isActive={currentStep >= 1}
+            isComplete={currentStep > 1}
+          />
+          <Step 
+            number={2} 
+            title="Fund Wallet" 
+            isActive={currentStep >= 2}
+            isComplete={currentStep > 2}
+          />
+          <Step 
+            number={3} 
+            title="Burn Bitcoin" 
+            isActive={currentStep >= 3}
+            isComplete={currentStep > 3}
+          />
+          <Step 
+            number={4} 
+            title="Verify Burn" 
+            isActive={currentStep >= 4}
+            isComplete={false}
+          />
+        </div>
+        
+        {/* Demo interface */}
+        <div className="bg-gray-800 rounded-xl p-6 md:p-8 shadow-xl">
+          {/* Wallet information */}
+          <div className="mb-8">
+            <h3 className="text-xl font-semibold text-white mb-4">
+              Regtest Wallet
+              <button 
+                onClick={initializeDemo}
+                disabled={isLoading}
+                className="ml-3 text-xs bg-gray-700 hover:bg-gray-600 text-white px-2 py-1 rounded inline-flex items-center"
+              >
+                <RefreshCw className="h-3 w-3 mr-1" />
+                Reset Demo
+              </button>
+            </h3>
+            
+            {wallet ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="bg-gray-700/50 rounded-lg p-4">
+                  <p className="text-sm text-gray-400 mb-1">Address</p>
+                  <div className="flex items-center justify-between">
+                    <p className="text-white font-mono text-sm truncate mr-2">
+                      {wallet.address}
+                    </p>
+                    <button 
+                      onClick={() => copyToClipboard(wallet.address)}
+                      className="text-gray-400 hover:text-white"
+                    >
+                      {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                    </button>
+                  </div>
+                </div>
+                
+                <div className="bg-gray-700/50 rounded-lg p-4">
+                  <p className="text-sm text-gray-400 mb-1">Private Key (WIF)</p>
+                  <div className="flex items-center justify-between">
+                    <p className="text-white font-mono text-sm truncate mr-2">
+                      {showPrivateKey ? wallet.privateKeyWIF : '••••••••••••••••••••••••••••••••'}
+                    </p>
+                    <div className="flex space-x-2">
+                      <button 
+                        onClick={() => setShowPrivateKey(!showPrivateKey)}
+                        className="text-gray-400 hover:text-white"
+                      >
+                        {showPrivateKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </button>
+                      <button 
+                        onClick={() => copyToClipboard(wallet.privateKeyWIF)}
+                        className="text-gray-400 hover:text-white"
+                      >
+                        <Copy className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="bg-gray-700/50 rounded-lg p-4 md:col-span-2">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <p className="text-sm text-gray-400 mb-1">Balance</p>
+                      <p className="text-xl font-semibold text-white">{wallet.balance.toFixed(8)} BTC</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-400 mb-1">Block Height</p>
+                      <p className="text-xl font-semibold text-white">{blockHeight}</p>
+                    </div>
+                    <div>
+                      <button
+                        onClick={() => mineBlocks(1)}
+                        disabled={isLoading}
+                        className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded-md text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        Mine Block
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="text-center p-12">
+                <p className="text-gray-400 mb-4">No wallet created yet</p>
+                <button
+                  onClick={initializeDemo}
+                  disabled={isLoading}
+                  className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isLoading ? 'Creating...' : 'Create Regtest Wallet'}
+                </button>
+              </div>
+            )}
+          </div>
+          
+          {/* Fund wallet section */}
+          {wallet && currentStep === 1 && (
+            <div className="bg-gradient-to-r from-blue-900/50 to-blue-800/30 rounded-xl p-6 mb-8">
+              <h3 className="text-xl font-semibold text-white mb-4">Step 1: Fund Your Wallet</h3>
+              <p className="text-gray-300 mb-6">
+                In a real Bitcoin network, you would need to acquire Bitcoin through an exchange or from another person. 
+                In this regtest demo, we can create test Bitcoin for educational purposes.
+              </p>
+              <button
+                onClick={fundWallet}
+                disabled={isLoading}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isLoading ? 'Funding...' : 'Fund Wallet with 1 Test Bitcoin'}
+              </button>
+            </div>
+          )}
+          
+          {/* UTXOs section */}
+          {wallet && utxos.length > 0 && currentStep >= 2 && (
+            <div className="mb-8">
+              <h3 className="text-xl font-semibold text-white mb-4">Unspent Transaction Outputs (UTXOs)</h3>
+              <div className="overflow-x-auto">
+                <table className="min-w-full bg-gray-700/30 rounded-lg overflow-hidden">
+                  <thead>
+                    <tr className="bg-gray-700/70">
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Transaction ID</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Output Index</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Amount (BTC)</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-700/50">
+                    {utxos.map((utxo) => (
+                      <tr 
+                        key={`${utxo.txid}-${utxo.vout}`}
+                        className={`hover:bg-gray-700/50 ${selectedUtxo && selectedUtxo.txid === utxo.txid && selectedUtxo.vout === utxo.vout ? 'bg-orange-900/30 border-l-4 border-orange-500' : ''}`}
+                      >
+                        <td className="px-4 py-3 font-mono text-xs text-gray-300 truncate max-w-[150px]">
+                          {utxo.txid}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-gray-300">
+                          {utxo.vout}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-gray-300">
+                          {(utxo.value / 100000000).toFixed(8)}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-gray-300">
+                          <button
+                            onClick={() => {
+                              setSelectedUtxo(utxo)
+                              setCurrentStep(3)
+                            }}
+                            className="inline-flex items-center bg-orange-600 hover:bg-orange-700 text-white px-3 py-1 rounded text-xs"
+                          >
+                            <Flame className="h-3 w-3 mr-1" />
+                            Select to Burn
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+          
+          {/* Burn Bitcoin section */}
+          {wallet && selectedUtxo && currentStep === 3 && (
+            <div className="bg-gradient-to-r from-orange-900/50 to-red-900/30 rounded-xl p-6 mb-8">
+              <h3 className="text-xl font-semibold text-white mb-4">Step 3: Burn Bitcoin</h3>
+              <p className="text-gray-300 mb-6">
+                Burning Bitcoin means sending it to an OP_RETURN output, making it permanently unspendable.
+                This is an irreversible process that removes Bitcoin from circulation forever.
+              </p>
+              
+              <div className="mb-4">
+                <label htmlFor="burn-message" className="block text-sm font-medium text-gray-300">
+                  Burn Message (will be stored on the blockchain):
+                </label>
+                <input
+                  id="burn-message"
+                  type="text"
+                  value={burnMessage}
+                  onChange={(e) => setBurnMessage(e.target.value)}
+                  className="mt-1 block w-full bg-gray-800 border border-gray-700 rounded-md py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  placeholder="Enter a message to store with this burn transaction"
+                />
+              </div>
+              
+              <div className="bg-black/20 p-4 rounded-lg mb-6">
+                <h4 className="text-sm font-semibold text-white mb-2">UTXO to Burn:</h4>
+                <p className="font-mono text-xs text-gray-300 mb-1">TXID: {selectedUtxo.txid}</p>
+                <p className="font-mono text-xs text-gray-300 mb-1">Output Index: {selectedUtxo.vout}</p>
+                <p className="font-mono text-xs text-gray-300">Amount: {(selectedUtxo.value / 100000000).toFixed(8)} BTC</p>
+              </div>
+              
+              <div className="flex space-x-4">
+                <button
+                  onClick={() => {
+                    setSelectedUtxo(null)
+                    setCurrentStep(2)
+                  }}
+                  className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md text-sm font-medium"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={burnBitcoin}
+                  disabled={isLoading}
+                  className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+                >
+                  <Flame className="h-4 w-4 mr-2" />
+                  {isLoading ? 'Burning...' : 'Burn This Bitcoin Forever'}
+                </button>
+              </div>
+            </div>
+          )}
+          
+          {/* Transactions */}
+          {wallet && transactions.length > 0 && (
+            <div>
+              <h3 className="text-xl font-semibold text-white mb-4">Transaction History</h3>
+              <div className="overflow-x-auto">
+                <table className="min-w-full bg-gray-700/30 rounded-lg overflow-hidden">
+                  <thead>
+                    <tr className="bg-gray-700/70">
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Type</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Transaction ID</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Amount (BTC)</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Confirmations</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Details</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-700/50">
+                    {transactions.map((tx) => (
+                      <tr key={tx.txid} className={`hover:bg-gray-700/50 ${tx.type === 'burning' ? 'bg-red-900/10' : ''}`}>
+                        <td className="px-4 py-3 text-sm">
+                          {tx.type === 'funding' ? (
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-200 text-green-800">
+                              Funding
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-200 text-red-800">
+                              <Flame className="h-3 w-3 mr-1" />
+                              Burning
+                            </span>
+                          )}
+                        </td>
+                        <td className="px-4 py-3 font-mono text-xs text-gray-300 truncate max-w-[150px]">
+                          {tx.txid}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-gray-300">
+                          {tx.amount.toFixed(8)}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-gray-300">
+                          {tx.confirmations === 0 ? (
+                            <span className="text-yellow-500">Unconfirmed</span>
+                          ) : (
+                            tx.confirmations
+                          )}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-gray-300">
+                          {tx.type === 'burning' && tx.burnMessage && (
+                            <div className="text-xs">
+                              <span className="text-gray-400">Message:</span> "{tx.burnMessage}"
+                            </div>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              
+              {currentStep === 4 && transactions.some(tx => tx.type === 'burning' && tx.confirmations === 0) && (
+                <div className="mt-4 bg-gradient-to-r from-green-900/50 to-green-800/30 rounded-xl p-4">
+                  <h4 className="text-sm font-semibold text-white mb-2">Verify the Burn Transaction</h4>
+                  <p className="text-gray-300 mb-4">
+                    Your transaction has been created and broadcast to the regtest network. 
+                    To confirm it, you need to mine a new block.
+                  </p>
+                  <button
+                    onClick={() => mineBlocks(1)}
+                    disabled={isLoading}
+                    className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isLoading ? 'Mining...' : 'Mine Block to Confirm'}
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+        
+        {/* Educational content */}
+        <div className="mt-16 bg-gray-800/50 rounded-xl p-6 md:p-8">
+          <h3 className="text-2xl font-semibold text-white mb-6">
+            What Happens When Bitcoin is Burned?
+          </h3>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div>
+              <h4 className="text-xl font-medium text-orange-500 mb-4">The Technical Process</h4>
+              <p className="text-gray-300 mb-3">
+                When Bitcoin is "burned," it's sent to an OP_RETURN output, which makes it unspendable by design. Here's what happens:
+              </p>
+              <ol className="list-decimal list-inside space-y-2 text-gray-300">
+                <li>A transaction is created that spends a UTXO (Unspent Transaction Output)</li>
+                <li>Instead of sending to a normal address, it's sent to an OP_RETURN script</li>
+                <li>The OP_RETURN script can include a small message (up to 80 bytes)</li>
+                <li>Network fees are subtracted from the input amount</li>
+                <li>The transaction is broadcast and confirmed by miners</li>
+                <li>The Bitcoin becomes permanently unspendable</li>
+              </ol>
+            </div>
+            
+            <div>
+              <h4 className="text-xl font-medium text-orange-500 mb-4">The Philosophical Implications</h4>
+              <p className="text-gray-300 mb-3">
+                Burning Bitcoin is a powerful statement about ownership, scarcity, and control:
+              </p>
+              <ul className="list-disc list-inside space-y-2 text-gray-300">
+                <li>It demonstrates true ownership - only the owner can decide to burn their Bitcoin</li>
+                <li>It increases scarcity by permanently removing Bitcoin from circulation</li>
+                <li>It serves as a reminder that individuals, not governments, should control Bitcoin</li>
+                <li>It makes a statement that Bitcoin's value is in its principles, not just its price</li>
+                <li>It proves that decentralized systems can't be controlled by central authorities</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+export default BurnDemo 
