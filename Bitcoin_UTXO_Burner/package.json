@@ -1,0 +1,29 @@
+{
+  "name": "bitcoin-utxo-burner",
+  "version": "1.0.0",
+  "description": "A tool for permanently burning Bitcoin by sending UTXOs to OP_RETURN outputs",
+  "main": "bitcoin-utxo-burner.js",
+  "scripts": {
+    "test": "node bitcoinjs-regtest.js",
+    "test:js": "node bitcoinjs-regtest.js",
+    "start": "node example.js"
+  },
+  "keywords": [
+    "bitcoin",
+    "utxo",
+    "burn",
+    "op_return",
+    "cryptocurrency"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.8.2",
+    "bitcoinjs-lib": "^6.1.7",
+    "ecpair": "^2.1.0",
+    "tiny-secp256k1": "^2.2.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+} 
