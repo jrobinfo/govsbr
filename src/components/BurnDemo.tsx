@@ -158,6 +158,26 @@ const BurnDemo: FC = () => {
         
         // Update transactions
         setTransactions(data.transactions)
+        
+        // Update wallet if available
+        if (data.wallets && data.wallets.length > 0) {
+          // Find the wallet that matches our current wallet address
+          const updatedWallet = data.wallets.find((w: Wallet) => w.address === wallet?.address);
+          if (updatedWallet) {
+            setWallet(updatedWallet);
+          }
+        }
+        
+        // Check if a burning transaction has been confirmed
+        const confirmedBurnTx = data.transactions.find(
+          (tx: Transaction) => tx.type === 'burning' && tx.confirmations >= 1
+        );
+        
+        // If we have a confirmed burn transaction and we're on step 4, complete the step
+        if (confirmedBurnTx && currentStep === 4) {
+          // Mark demo as complete
+          setCurrentStep(5); // Using 5 to indicate completion of all steps
+        }
       } else {
         console.error('Failed to mine blocks:', data.error)
       }
@@ -265,7 +285,7 @@ const BurnDemo: FC = () => {
             number={4} 
             title="Verify Burn" 
             isActive={currentStep >= 4}
-            isComplete={false}
+            isComplete={currentStep >= 5}
           />
         </div>
         
@@ -543,13 +563,72 @@ const BurnDemo: FC = () => {
                     Your transaction has been created and broadcast to the regtest network. 
                     To confirm it, you need to mine a new block.
                   </p>
-                  <button
-                    onClick={() => mineBlocks(1)}
-                    disabled={isLoading}
-                    className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {isLoading ? 'Mining...' : 'Mine Block to Confirm'}
-                  </button>
+                  <div className="flex space-x-3">
+                    <button
+                      onClick={() => mineBlocks(1)}
+                      disabled={isLoading}
+                      className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {isLoading ? 'Mining...' : 'Mine Block to Confirm'}
+                    </button>
+                    <button
+                      onClick={() => mineBlocks(6)}
+                      disabled={isLoading}
+                      className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-md text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {isLoading ? 'Mining...' : 'Mine 6 Blocks (Fully Confirm)'}
+                    </button>
+                  </div>
+                </div>
+              )}
+              
+              {currentStep === 5 && (
+                <div className="mt-4 bg-gradient-to-r from-blue-900/50 to-indigo-800/30 rounded-xl p-4">
+                  <h4 className="text-lg font-semibold text-white mb-2">
+                    <Check className="h-5 w-5 inline-block mr-2 text-green-500" />
+                    Bitcoin Successfully Burned!
+                  </h4>
+                  <p className="text-gray-300 mb-4">
+                    Congratulations! You have successfully burned Bitcoin on the regtest network. 
+                    The transaction has been confirmed and the Bitcoin is permanently removed from circulation.
+                  </p>
+                  <div className="bg-black/20 p-4 rounded-lg">
+                    <h5 className="text-sm font-semibold text-white mb-2">Technical Details:</h5>
+                    {transactions.filter(tx => tx.type === 'burning' && tx.confirmations > 0).map(burnTx => (
+                      <div key={burnTx.txid} className="text-xs font-mono">
+                        <p className="text-gray-300 mb-1"><span className="text-gray-400">Transaction ID:</span> {burnTx.txid}</p>
+                        <p className="text-gray-300 mb-1"><span className="text-gray-400">Amount Burned:</span> {burnTx.amount.toFixed(8)} BTC</p>
+                        <p className="text-gray-300 mb-1"><span className="text-gray-400">Confirmations:</span> {burnTx.confirmations}</p>
+                        <p className="text-gray-300"><span className="text-gray-400">Message:</span> &quot;{burnTx.burnMessage}&quot;</p>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  <div className="mt-4 bg-gray-800/50 p-4 rounded-lg">
+                    <h5 className="text-sm font-semibold text-white mb-2">How to Verify a Burn Transaction:</h5>
+                    <ol className="list-decimal list-inside space-y-1 text-gray-300 text-xs">
+                      <li>In a Bitcoin explorer, look up the transaction ID shown above</li>
+                      <li>Examine the outputs of the transaction</li>
+                      <li>A legitimate burn will have an <span className="font-mono">OP_RETURN</span> output script</li>
+                      <li>Verify that the <span className="font-mono">OP_RETURN</span> output contains your message data</li>
+                      <li>Check that the balance was permanently removed from circulation</li>
+                      <li>Confirm the transaction has sufficient confirmations (usually 6+)</li>
+                    </ol>
+                    <p className="mt-2 text-xs text-gray-400">
+                      In real-world usage, properly verifying burns is a critical step to ensure
+                      that the Bitcoin was actually made unspendable and not just sent to another address.
+                    </p>
+                  </div>
+                  
+                  <div className="mt-4">
+                    <button
+                      onClick={initializeDemo}
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-md text-sm font-medium"
+                    >
+                      <RefreshCw className="h-4 w-4 inline-block mr-1" />
+                      Reset Demo
+                    </button>
+                  </div>
                 </div>
               )}
             </div>

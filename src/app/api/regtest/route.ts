@@ -178,10 +178,14 @@ async function handleMineBlocks(count: number) {
       transactions.set(txid, tx)
     }
     
+    // Get all wallets to return their updated states
+    const allWallets: Wallet[] = Array.from(wallets.values());
+    
     return NextResponse.json({
       success: true,
       blockHeight,
-      transactions: Array.from(transactions.values())
+      transactions: Array.from(transactions.values()),
+      wallets: allWallets
     })
   } catch (error) {
     console.error('Failed to mine blocks:', error)
