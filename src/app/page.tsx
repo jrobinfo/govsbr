@@ -6,8 +6,8 @@ import FAQ from '@/components/FAQ'
 import CallToAction from '@/components/CallToAction'
 
 export const metadata: Metadata = {
-  title: 'Bitcoin UTXO Burner | Educational Demo',
-  description: 'Learn about burning Bitcoin UTXOs and why Bitcoin belongs to individuals, not governments',
+  title: 'Bitcoin UTXO Burner & Strategic Reserve Demos',
+  description: 'Learn about burning Bitcoin UTXOs and explore how Taproot and Miniscript can secure a Strategic Bitcoin Reserve with multi-signature requirements and timelocks',
 }
 
 export default function Home() {

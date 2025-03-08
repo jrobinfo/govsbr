@@ -18,12 +18,18 @@ const Hero: FC = () => {
           Learn about Bitcoin UTXOs, the concept of &quot;burning&quot; Bitcoin, and why government-controlled Bitcoin reserves present significant risks to Bitcoin&apos;s core principles of decentralization and financial sovereignty.
         </p>
         
-        <div className="mt-10 flex justify-center gap-x-6">
+        <div className="mt-10 flex flex-wrap justify-center gap-4">
           <Link
             href="#demo"
             className="rounded-md bg-orange-500 px-5 py-3 text-base font-semibold text-white shadow-sm hover:bg-orange-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-500"
           >
-            Try the Demo
+            Try the Burn Demo
+          </Link>
+          <Link
+            href="/sbr-demo"
+            className="rounded-md bg-blue-600 px-5 py-3 text-base font-semibold text-white shadow-sm hover:bg-blue-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+          >
+            Strategic Reserve Demo
           </Link>
           <Link
             href="/research"

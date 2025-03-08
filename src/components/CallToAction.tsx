@@ -58,20 +58,19 @@ const CallToAction: FC = () => {
           </div>
           
           <div className="bg-gray-800/50 hover:bg-gray-800/80 transition-colors rounded-xl p-8 text-center">
-            <div className="mx-auto h-16 w-16 flex items-center justify-center rounded-full bg-orange-500 mb-6">
+            <div className="mx-auto h-16 w-16 flex items-center justify-center rounded-full bg-blue-600 mb-6">
               <BookOpen className="h-8 w-8 text-white" />
             </div>
-            <h3 className="text-xl font-semibold text-white mb-3">Explore OP_RETURN</h3>
+            <h3 className="text-xl font-semibold text-white mb-3">Strategic Bitcoin Reserve</h3>
             <p className="text-gray-300 mb-6">
-              Learn more about the OP_RETURN opcode in Bitcoin, how it works, and why it&apos;s used 
-              for permanently burning Bitcoin.
+              Explore how Taproot and Miniscript can be used to secure a government Bitcoin reserve with 
+              multi-signature requirements and timelocks.
             </p>
             <Link 
-              href="https://en.bitcoin.it/wiki/OP_RETURN" 
-              target="_blank"
-              className="inline-flex items-center text-orange-500 hover:text-orange-400 font-medium"
+              href="/sbr-demo" 
+              className="inline-flex items-center text-blue-500 hover:text-blue-400 font-medium"
             >
-              Read the documentation
+              Try the demo
               <svg className="ml-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
               </svg>
